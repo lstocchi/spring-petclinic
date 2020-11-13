@@ -36,10 +36,10 @@ jobs:
       run: |
         buildah images
     - name: Lucas Test Push To Quay Action
-      uses: lstocchi/push-to-quay-action@0.0.2
+      uses: lstocchi/push-to-quay-action@0.0.3
       with:
         image-to-push: test2
-        quay-registry: ${{ secrets.QUAY_REPO }}
+        quay-registry: ${{ secrets.QUAY_REPO }}/testaction
         username: ${{ secrets.QUAY_USERNAME }}
         password: ${{ secrets.QUAY_PASSWORD }}
         
