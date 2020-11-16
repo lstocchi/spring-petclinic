@@ -1,32 +1,49 @@
-# This is a basic workflow to help you get started with Actions
+# This workflow will build container image of the
+# application using source to image build startegy
+# and push the image to quay.io
 
-name: CI
+name: Build and Push
 on: [push]
 
-env:
-  PROJECT: demo-action
-  APP_NAME: myapp
-
 jobs:
-  build:
-    name: Setup and Deploy
-    runs-on: self-hosted
-
+  test-s2i-job:
+    runs-on: ubuntu-latest
+    name: A job to build and push image
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+      # Setup Docker Deamon as Docker Daemon should be
+      # running to successfully build image using s2i
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+        with:
+          version: latest
 
-    - name: OpenShift Action
-      uses: redhat-developer/openshift-actions@v2.1.0
-      with:
-        version: '4.3'
-        openshift_server_url: ${{ secrets.CRC_OPENSHIFT_URL }}
-        parameters: '{"apitoken": "${{ secrets.CRC_TOKEN }}", "acceptUntrustedCerts": "true"}'
-        cmd: |
-          oc project ${PROJECT}
-          oc import-image openshift/java --confirm          
-    - name: Execute oc commands
-      run: |
-        hasBuilds=$(oc get bc ${APPNAME} --no-headers)
-        [[ -z $hasBuilds ]] && oc new-app ${GITHUB_WORKSPACE} --image-stream=java --name ${APP_NAME} || oc start-build ${APP_NAME} --from-dir . --follow
-        
+      # Checkout spring petclinic repository
+      - name: Checkout
+        uses: actions/checkout@v2
+        env:
+          DEFAULT_BRANCH: main
+
+      # Setup S2i and Build container image
+      - name: Setup and Buildd
+        uses: Divyansh42/s2i-build@v0.0.2
+        with:
+          path_context: '.'
+          builder_image: 'registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift'
+          image_name: spring-petclinic-s2i
+          image_tag: 'v1'
+
+      # Verify if images is built
+      - name: Check image created
+        run: |
+          docker images
+          
+      # Push Image to Quay registry
+      - name: Push To Quay Action
+        uses: lstocchi/push-to-quay-action@0.0.6
+        with:
+          image-to-push: 'spring-petclinic-s2i'
+          tag: 'v1'
+          registry: ${{ secrets.QUAY_REPO }}
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_PASSWORD }}
