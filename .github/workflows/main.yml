@@ -22,7 +22,7 @@ jobs:
         cd ${GITHUB_WORKSPACE}
         mvn package
     - name: Lucas Test Build Action
-      uses: lstocchi/buildah-action@0.0.8
+      uses: lstocchi/buildah-action@0.0.9
       with:
         new-image-name: test2
         content: |
