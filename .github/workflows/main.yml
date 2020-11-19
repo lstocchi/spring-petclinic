@@ -39,9 +39,9 @@ jobs:
       uses: lstocchi/push-to-quay-action@0.0.6
       with:
         image-to-push: test2
-        registry: ${{ secrets.QUAY_REPO }}
-        username: ${{ secrets.QUAY_USERNAME }}
-        password: ${{ secrets.QUAY_PASSWORD }}
+        registry: ${{ secrets.DOCKERHUB_URL }}
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
         
 
     
