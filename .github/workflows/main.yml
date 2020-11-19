@@ -22,9 +22,10 @@ jobs:
         cd ${GITHUB_WORKSPACE}
         mvn package
     - name: Lucas Test Build Action
-      uses: lstocchi/buildah-action@0.0.9
+      uses: lstocchi/buildah-action@0.0.11
       with:
         image: test2
+        tag: v21
         content: |
           target/spring-petclinic-2.3.0.BUILD-SNAPSHOT.jar
         entrypoint: |
@@ -39,6 +40,7 @@ jobs:
       uses: lstocchi/push-to-quay-action@0.0.6
       with:
         image-to-push: test2
+        tag: v21
         registry: ${{ secrets.QUAY_REPO }}
         username: ${{ secrets.QUAY_USERNAME }}
         password: ${{ secrets.QUAY_PASSWORD }}
