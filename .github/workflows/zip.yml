@@ -8,13 +8,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
+    - name: Get the version
+      id: get_version
+      run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
     - name: Archive Release
       uses: thedoctor0/zip-release@master
       with:
-        filename: 'release.zip'
+        filename: '${{ steps.get_version.outputs.VERSION }}.zip'
         exclusions: '*.git* .travis.yml'
-    - name: Github Release create, update, and upload assets
-      uses: meeDamian/github-release@v2.0.3
+    - name: Upload Release
+      uses: ncipollo/release-action@v1
       with:
+        artifacts: '${{ steps.get_version.outputs.VERSION }}.zip'
         token: ${{ secrets.GITHUB_TOKEN }}
-        files: 'release.zip'
