@@ -21,3 +21,4 @@ jobs:
       with:
         artifacts: '${{ steps.get_version.outputs.VERSION }}.zip'
         token: ${{ secrets.GITHUB_TOKEN }}
+        body: 'Release ${{ steps.get_version.outputs.VERSION }}'
