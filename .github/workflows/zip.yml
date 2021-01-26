@@ -8,12 +8,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    - name: Generate changelog
-      uses: heinrichreimer/action-github-changelog-generator@v2.2
-      id: changelog
-      with:
-        output: ''
-        onlyLastTag: true
+    - name: Create changelogs
+      id: changelogs
+      uses: heineiuo/create-changelogs@master
     - name: Get the version
       id: get_version
       run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
@@ -27,4 +24,4 @@ jobs:
       with:
         artifacts: '${{ steps.get_version.outputs.VERSION }}.zip'
         token: ${{ secrets.GITHUB_TOKEN }}
-        body: 'Release ${{ steps.changelog.outputs.changelog }}'
+        body: 'Release ${{ steps.changelogs.outputs.changelogs }}'
